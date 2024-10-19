@@ -40,3 +40,14 @@
 .read-the-docs {
   color: #888;
 }
+
+.prism-code-editor {
+  height: 100%;
+  width: 100%;
+  background: transparent !important;
+}
+
+textarea {
+  height: 100%;
+  width: 100%;
+}
