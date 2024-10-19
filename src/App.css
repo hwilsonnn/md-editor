@@ -5,36 +5,21 @@
 	text-align: center;
 }
 
-.prism-code-editor {
-	height: 100%;
-	width: 100%;
-	background: transparent !important;
-
-	line-height: 14px;
-	font-size: small;
+hr {
+	color: #303741;
+	margin: 16px 0;
+	border-top: 0px;
 }
 
-.pce-overlays {
-	padding-right: 0.75rem !important;
+button {
+	background: transparent;
+	border: none;
+	padding: 8px;
+	border-radius: 8px;
+	transition: 0.3s;
 }
 
-textarea {
-	height: 100%;
-	width: 100%;
-}
-
-h1 {
-	font-size: xx-large;
-}
-
-h2 {
-	font-size: x-large;
-}
-
-h3 {
-	font-size: larger;
-}
-
-h4 {
-	font-size: large;
+button:hover {
+	background: #303741;
+	cursor: pointer;
 }

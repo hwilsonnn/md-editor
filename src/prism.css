@@ -1,0 +1,21 @@
+@import "prism-react-editor/layout.css";
+@import "prism-react-editor/themes/github-dark.css";
+@import "prism-react-editor/search.css";
+
+.prism-code-editor {
+	height: 100%;
+	width: 100%;
+	background: transparent !important;
+
+	line-height: 14px;
+	font-size: small;
+}
+
+.pce-overlays {
+	padding-right: 0.75rem !important;
+}
+
+textarea {
+	height: 100%;
+	width: 100%;
+}
