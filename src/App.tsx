@@ -42,8 +42,9 @@ function App() {
 				height: "90dvh",
 				width: "75dvw",
 				textAlign: "left",
-				// border: "1px solid gray",
+				border: "1px solid #303741",
 				borderRadius: "8px",
+				padding: isEditing ? "0 12px 0 0" : "0 0 0 12px",
 			}}
 		>
 			{isEditing && (
@@ -51,6 +52,7 @@ function App() {
 					language="markdown"
 					tabSize={4}
 					lineNumbers={false}
+					wordWrap
 					value={savedValue}
 					onUpdate={setContent}
 				>
@@ -60,7 +62,7 @@ function App() {
 			{!isEditing && (
 				<div
 					id="my-markdown-area"
-					style={{ height: "100%", width: "100%", padding: "0px 10px" }}
+					style={{ height: "100%", width: "100%" }}
 					onClick={() => setIsEditing(true)}
 				>
 					<Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
