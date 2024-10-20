@@ -47,8 +47,8 @@ function App() {
 					height: "85dvh",
 					width: "75dvw",
 					textAlign: "left",
-					border: "1px solid #303741",
-					borderRadius: "8px",
+					// border: "1px solid #303741",
+					// borderRadius: "8px",
 					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px",
 				}}
 			>
