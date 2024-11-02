@@ -13,6 +13,7 @@ function App() {
 	const [savedValue, setSavedValue] = useState("")
 	const [content, setContent] = useState("")
 	const [isEditing, setIsEditing] = useState(true)
+	const [noteTitle, setNoteTitle] = useState("")
 
 	const escCallback = useCallback(
 		(e: KeyboardEvent) => {
@@ -35,6 +36,7 @@ function App() {
 	// TODO:
 	// Add file title, this can get pulled into the browser tab name
 	// Create new note + browse existing notes
+
 	// PWA integration
 	// indexeddb integration
 	// light mode + dark mode toggle??
@@ -48,6 +50,21 @@ function App() {
 					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px",
 				}}
 			>
+				<input
+					value={noteTitle}
+					className="title-input"
+					style={{
+						marginLeft: isEditing ? "12px" : "0",
+					}}
+					placeholder="Note name"
+					onInput={(e) => setNoteTitle((e.target as HTMLInputElement).value)}
+					onBlur={() => {
+						if (noteTitle && noteTitle.length > 0) {
+							document.title = `${noteTitle} - Markdown Editor`
+						}
+					}}
+				/>
+				<br />
 				{isEditing && (
 					<Editor
 						language="markdown"
@@ -70,7 +87,7 @@ function App() {
 					</div>
 				)}
 			</div>
-			<hr />
+			<hr color="darkgray" />
 			<button onClick={() => downloadTxtFile(content)}>Download</button>
 		</>
 	)
