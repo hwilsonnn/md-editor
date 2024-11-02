@@ -23,3 +23,16 @@ button:hover {
 	background: #303741;
 	cursor: pointer;
 }
+
+.app-container {
+	height: 85dvh;
+	width: 75dvw;
+	text-align: left;
+	transition: ease width 0.1s;
+}
+
+@media screen and (max-width: 800px) {
+	.app-container {
+		width: 95dvw;
+	}
+}

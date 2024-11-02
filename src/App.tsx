@@ -43,12 +43,8 @@ function App() {
 	return (
 		<>
 			<div
+				className="app-container"
 				style={{
-					height: "85dvh",
-					width: "75dvw",
-					textAlign: "left",
-					// border: "1px solid #303741",
-					// borderRadius: "8px",
 					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px",
 				}}
 			>
@@ -67,7 +63,7 @@ function App() {
 				{!isEditing && (
 					<div
 						id="my-markdown-area"
-						style={{ height: "100%", width: "100%" }}
+						style={{ height: "100%", width: "100%", overflowY: "scroll" }}
 						onClick={() => setIsEditing(true)}
 					>
 						<Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
