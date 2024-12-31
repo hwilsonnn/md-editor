@@ -3,7 +3,7 @@
 @import "prism-react-editor/search.css";
 
 .prism-code-editor {
-	height: 100%;
+	height: 95%;
 	width: 100%;
 	background: transparent !important;
 

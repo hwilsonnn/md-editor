@@ -35,6 +35,14 @@ function App() {
 		}
 	}, [isEditing])
 
+	// Something like this to handle pasting images?
+	// useEffect(() => {
+	// 	document.addEventListener("paste", (clipboardstuff) => {
+	// 		console.log("paste event", clipboardstuff.clipboardData)
+	// 		console.log("trying to get data", clipboardstuff.clipboardData?.files[0])
+	// 	})
+	// }, [])
+
 	// TODO:
 	// Add file title, this can get pulled into the browser tab name
 	// Create new note + browse existing notes
@@ -43,7 +51,8 @@ function App() {
 	// indexeddb integration
 	// light mode + dark mode toggle??
 	// add tests
-	// Support more languages
+	// Support more code languages in backticks
+	// how to paste images??
 
 	return (
 		<>
@@ -120,7 +129,17 @@ function App() {
 				)}
 			</div>
 			<hr color="darkgray" />
-			<button onClick={() => downloadTxtFile(content)}>Download</button>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "row",
+					justifyContent: "center",
+					gap: "5px",
+				}}
+			>
+				<button>+ New Note</button>
+				<button onClick={() => downloadTxtFile(content)}>Download</button>
+			</div>
 		</>
 	)
 }
