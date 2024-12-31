@@ -7,6 +7,7 @@ import { Editor } from "prism-react-editor"
 import { BasicSetup } from "prism-react-editor/setups"
 
 import "prism-react-editor/prism/languages/markdown"
+
 import { downloadTxtFile } from "./utils"
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
 	const [content, setContent] = useState("")
 	const [isEditing, setIsEditing] = useState(true)
 	const [noteTitle, setNoteTitle] = useState("")
+	const [isSidebarOpen, setSidebarOpen] = useState(false)
 
 	const escCallback = useCallback(
 		(e: KeyboardEvent) => {
@@ -41,30 +43,60 @@ function App() {
 	// indexeddb integration
 	// light mode + dark mode toggle??
 	// add tests
+	// Support more languages
 
 	return (
 		<>
+			<div className={`sidebar ${isSidebarOpen ? "open" : "closed"}`}>
+				<div
+					style={{
+						background: "green",
+						display: "flex",
+						flexDirection: "column",
+						height: "100%",
+						borderRadius: "0px 10px 10px 0px",
+						alignItems: "flex-start",
+						gap: "5px",
+					}}
+				>
+					<div>
+						<button onClick={() => setSidebarOpen(false)}>close</button>
+					</div>
+					<div>
+						<button>+ New Note</button>
+					</div>
+				</div>
+			</div>
 			<div
 				className="app-container"
 				style={{
 					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px",
 				}}
 			>
-				<input
-					value={noteTitle}
-					className="title-input"
+				<div
 					style={{
-						marginLeft: isEditing ? "12px" : "0",
+						paddingLeft: isEditing ? "12px" : "0",
+						width: "100%",
+						display: "flex",
+						flexDirection: "column",
+						marginBottom: isEditing ? "8px" : "0",
 					}}
-					placeholder="Note name"
-					onInput={(e) => setNoteTitle((e.target as HTMLInputElement).value)}
-					onBlur={() => {
-						if (noteTitle && noteTitle.length > 0) {
-							document.title = `${noteTitle} - Markdown Editor`
-						}
-					}}
-				/>
-				<br />
+				>
+					{/* <div>
+						<button onClick={() => setSidebarOpen(!isSidebarOpen)}>Open</button>
+					</div> */}
+					<input
+						value={noteTitle}
+						className="title-input"
+						placeholder="Note name"
+						onInput={(e) => setNoteTitle((e.target as HTMLInputElement).value)}
+						onBlur={() => {
+							if (noteTitle && noteTitle.length > 0) {
+								document.title = `${noteTitle} - Markdown Editor`
+							}
+						}}
+					/>
+				</div>
 				{isEditing && (
 					<Editor
 						language="markdown"
