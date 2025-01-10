@@ -30,6 +30,10 @@ function App() {
 	useEffect(() => {
 		if (isEditing) {
 			document.addEventListener("keydown", escCallback, true)
+			const editor = document.querySelector("textarea")
+			if (editor) {
+				editor.spellcheck = true
+			}
 		} else {
 			document.removeEventListener("keydown", escCallback, true)
 			setSavedValue(content)
@@ -49,13 +53,13 @@ function App() {
 			value={{
 				isEditing,
 				setIsEditing,
-				currentNote: { noteName, setNoteName },
+				currentNote: { noteName, setNoteName }
 			}}
 		>
 			<div
 				className="app-container"
 				style={{
-					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px",
+					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px"
 				}}
 			>
 				<NameInput />
@@ -87,7 +91,7 @@ function App() {
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "center",
-					gap: "5px",
+					gap: "5px"
 				}}
 			>
 				<button>💾 Save</button>

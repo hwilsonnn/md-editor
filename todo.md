@@ -1,7 +1,8 @@
 # TODO:
 
 - Add file title, this can get pulled into the browser tab name
-- Create new note + browse existing notes
+- Create modal functionality
+  - Create new note + browse existing notes
 - PWA integration
 - indexeddb integration
 - light mode + dark mode toggle??
