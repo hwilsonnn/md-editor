@@ -28,6 +28,21 @@ function App() {
 	)
 
 	useEffect(() => {
+		window.addEventListener("beforeunload", (e) => {
+			if (!window.confirm("are you sure you want to leave the page")) {
+				e.preventDefault()
+			}
+		})
+
+		document.addEventListener("keydown", (e) => {
+			if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+				e.preventDefault()
+				downloadTxtFile(content)
+			}
+		})
+	}, [])
+
+	useEffect(() => {
 		if (isEditing) {
 			document.addEventListener("keydown", escCallback, true)
 			const editor = document.querySelector("textarea")
