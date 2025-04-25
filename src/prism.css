@@ -3,12 +3,25 @@
 @import "prism-react-editor/search.css";
 
 .prism-code-editor {
-	height: 95%;
+	height: calc(100% - 44px);
 	width: 100%;
 	background: transparent !important;
 
 	line-height: 20px;
-	font-size: medium;
+	font-size: 14px;
+
+	textarea {
+		padding: 0;
+	}
+}
+
+.pce-wrapper {
+	margin-top: 20px;
+}
+
+.pce-line {
+	padding: 0;
+	margin: 0;
 }
 
 .pce-overlays {

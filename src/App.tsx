@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import "./App.css"
 import "./prism.css"
+import "./formattedMarkdown.css"
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Editor } from "prism-react-editor"
@@ -27,20 +28,31 @@ function App() {
 		[content]
 	)
 
-	useEffect(() => {
-		window.addEventListener("beforeunload", (e) => {
-			if (!window.confirm("are you sure you want to leave the page")) {
-				e.preventDefault()
-			}
-		})
+	const downloadContent = useCallback(() => {
+		downloadTxtFile(content, noteName)
+	}, [content, noteName])
 
-		document.addEventListener("keydown", (e) => {
-			if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-				e.preventDefault()
-				downloadTxtFile(content)
-			}
-		})
-	}, [])
+	const unload = (e: BeforeUnloadEvent) => {
+		if (!window.confirm("are you sure you want to leave the page")) {
+			e.preventDefault()
+		}
+	}
+	const downloadOnSave = (e: KeyboardEvent) => {
+		if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+			e.preventDefault()
+			downloadContent()
+		}
+	}
+
+	useEffect(() => {
+		window.addEventListener("beforeunload", unload)
+		document.addEventListener("keydown", downloadOnSave)
+
+		return () => {
+			window.removeEventListener("beforeunload", unload)
+			document.removeEventListener("keydown", downloadOnSave)
+		}
+	}, [downloadContent])
 
 	useEffect(() => {
 		if (isEditing) {
@@ -63,6 +75,8 @@ function App() {
 	// 	})
 	// }, [])
 
+	const [bottomBarVisible, setBottomBarVisible] = useState(false)
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -71,12 +85,7 @@ function App() {
 				currentNote: { noteName, setNoteName }
 			}}
 		>
-			<div
-				className="app-container"
-				style={{
-					padding: isEditing ? "0 12px 0 0" : "0 0 0 12px"
-				}}
-			>
+			<div className="app-container">
 				<NameInput />
 				{isEditing && (
 					<Editor
@@ -93,7 +102,7 @@ function App() {
 				{!isEditing && (
 					<div
 						id="my-markdown-area"
-						style={{ height: "100%", width: "100%", overflowY: "scroll" }}
+						className="rendered-markdown"
 						onClick={() => setIsEditing(true)}
 					>
 						<Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
@@ -109,9 +118,21 @@ function App() {
 					gap: "5px"
 				}}
 			>
-				<button>💾 Save</button>
-				<button>➕ New Note</button>
-				<button onClick={() => downloadTxtFile(content)}>⬇ Download</button>
+				{/* <button>💾 Save</button> */}
+				{/* <button>➕ New Note</button> */}
+				<button onClick={() => downloadContent()}>⬇ Download</button>
+			</div>
+			<div className={`bottom-bar ${bottomBarVisible ? "open" : "closed"}`}>
+				<div className="bottom-activiation">
+					<button onClick={() => setBottomBarVisible(!bottomBarVisible)}>
+						{bottomBarVisible ? "v Close v" : "^ Open ^"}
+					</button>
+				</div>
+				<div className="bottom-content">
+					bottom bar content
+					<br />
+					sdoineoi
+				</div>
 			</div>
 		</AppContext.Provider>
 	)

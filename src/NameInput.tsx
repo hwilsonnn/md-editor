@@ -3,18 +3,15 @@ import AppContext from "./context"
 
 const NameInput = () => {
 	const {
-		isEditing,
-		currentNote: { noteName, setNoteName },
+		currentNote: { noteName, setNoteName }
 	} = useContext(AppContext)
 
 	return (
 		<div
 			style={{
-				paddingLeft: isEditing ? "12px" : "0",
 				width: "100%",
 				display: "flex",
-				flexDirection: "column",
-				marginBottom: isEditing ? "8px" : "0",
+				flexDirection: "column"
 			}}
 		>
 			<input

@@ -4,6 +4,10 @@
 	text-align: center;
 }
 
+body {
+	overflow: hidden;
+}
+
 hr {
 	color: #303741;
 	margin: 16px 0;
@@ -44,6 +48,7 @@ button:hover {
 }
 
 .app-container {
+	max-width: 1280px;
 	height: 85dvh;
 	width: 75dvw;
 	text-align: left;
@@ -53,6 +58,35 @@ button:hover {
 @media screen and (max-width: 800px) {
 	.app-container {
 		width: 95dvw;
+	}
+}
+
+.bottom-bar {
+	overflow: hidden;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+	left: 50%;
+	transform: translate(-50%, 0);
+	transition: ease-in-out bottom 0.5s, ease-out margin-top 0.5s;
+
+	.bottom-activiation {
+		padding-bottom: 30px;
+	}
+	.bottom-content {
+		margin-top: 40px;
+		position: absolute;
+
+		width: 200px;
+	}
+
+	&.closed {
+		bottom: -20px;
+	}
+
+	&.open {
+		bottom: 10px;
 	}
 }
 
