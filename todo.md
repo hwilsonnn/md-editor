@@ -7,7 +7,8 @@
 - indexeddb integration
 - light mode + dark mode toggle??
 - add tests
+- word count?
 - Support more code languages in backticks
 - how to paste images??
-- migrate from react-prism-editor
+- migrate from react-prism-editor to the JS library
 - upgrade to react19
