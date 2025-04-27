@@ -2,6 +2,8 @@
 @import "prism-react-editor/themes/github-dark.css";
 @import "prism-react-editor/search.css";
 
+/* Update 'selection-matches' it is off... */
+
 .prism-code-editor {
 	height: calc(100% - 44px);
 	width: 100%;

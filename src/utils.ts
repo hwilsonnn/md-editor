@@ -5,7 +5,7 @@ export const downloadTxtFile = (fileContent: string, fileName?: string) => {
 	element.download = `${(fileName && fileName.length > 0
 		? fileName
 		: "markdown"
-	).replaceAll(" ", "")}.md`
+	).replaceAll(" ", "")}_${new Date().toISOString()}.md`
 	document.body.appendChild(element) // Required for this to work in FireFox
 	element.click()
 }

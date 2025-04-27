@@ -8,6 +8,7 @@ import { Editor } from "prism-react-editor"
 import { BasicSetup } from "prism-react-editor/setups"
 
 import "prism-react-editor/prism/languages/markdown"
+import "prism-react-editor/prism/languages/typescript"
 
 import { downloadTxtFile } from "./utils"
 import AppContext from "./context"
@@ -18,6 +19,8 @@ function App() {
 	const [content, setContent] = useState("")
 	const [isEditing, setIsEditing] = useState(true)
 	const [noteName, setNoteName] = useState("")
+
+	const hideBottomBar = localStorage.getItem("hide-bottom-bar")
 
 	const escCallback = useCallback(
 		(e: KeyboardEvent) => {
@@ -122,18 +125,20 @@ function App() {
 				{/* <button>➕ New Note</button> */}
 				<button onClick={() => downloadContent()}>⬇ Download</button>
 			</div>
-			<div className={`bottom-bar ${bottomBarVisible ? "open" : "closed"}`}>
-				<div className="bottom-activiation">
-					<button onClick={() => setBottomBarVisible(!bottomBarVisible)}>
-						{bottomBarVisible ? "v Close v" : "^ Open ^"}
-					</button>
+			{(!hideBottomBar || hideBottomBar !== "true") && (
+				<div className={`bottom-bar ${bottomBarVisible ? "open" : "closed"}`}>
+					<div className="bottom-activiation">
+						<button onClick={() => setBottomBarVisible(!bottomBarVisible)}>
+							{bottomBarVisible ? "v Close v" : "^ Open ^"}
+						</button>
+					</div>
+					<div className="bottom-content">
+						bottom bar content
+						<br />
+						sdoineoi
+					</div>
 				</div>
-				<div className="bottom-content">
-					bottom bar content
-					<br />
-					sdoineoi
-				</div>
-			</div>
+			)}
 		</AppContext.Provider>
 	)
 }

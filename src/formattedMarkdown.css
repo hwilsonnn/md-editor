@@ -5,7 +5,8 @@
 
 	p {
 		margin-bottom: 20px;
-		height: 20px;
+		/* TODO: something is wrong here... */
+		/* height: 20px; */
 		line-height: 20px;
 		font-size: 16px;
 	}
