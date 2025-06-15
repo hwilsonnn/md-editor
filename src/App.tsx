@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { DragEvent, useCallback, useEffect, useState } from "react"
 import "./App.css"
 import "./prism.css"
 import "./formattedMarkdown.css"
@@ -8,17 +8,19 @@ import { Editor } from "prism-react-editor"
 import { BasicSetup } from "prism-react-editor/setups"
 
 import "prism-react-editor/prism/languages/markdown"
-import "prism-react-editor/prism/languages/typescript"
+// import "prism-react-editor/prism/languages/typescript"
 
-import { downloadTxtFile } from "./utils"
+import { downloadTxtFile, handleFileDrop } from "./utils"
 import AppContext from "./context"
-import NameInput from "./NameInput"
+import TitleInput from "./components/TitleInput"
 
 function App() {
 	const [savedValue, setSavedValue] = useState("")
 	const [content, setContent] = useState("")
 	const [isEditing, setIsEditing] = useState(true)
 	const [noteName, setNoteName] = useState("")
+	const [bottomBarVisible, setBottomBarVisible] = useState(false)
+	const [isDragging, setIsDragging] = useState(false)
 
 	const hideBottomBar = localStorage.getItem("hide-bottom-bar")
 
@@ -78,7 +80,33 @@ function App() {
 	// 	})
 	// }, [])
 
-	const [bottomBarVisible, setBottomBarVisible] = useState(false)
+	const handleDragOver = useCallback(
+		(e: DragEvent<HTMLElement>, isDragging: boolean) => {
+			e.preventDefault()
+			e.stopPropagation()
+			setIsDragging(isDragging)
+		},
+		[]
+	)
+
+	const handleDrop = useCallback(
+		(e: DragEvent<HTMLElement>) => {
+			e.preventDefault()
+			e.stopPropagation()
+			setIsDragging(false)
+
+			handleFileDrop(
+				e.dataTransfer.files,
+				(fileContent: string) => {
+					setContent(fileContent)
+					setSavedValue(fileContent)
+					setIsEditing(false)
+				},
+				setNoteName
+			)
+		},
+		[setSavedValue, setContent]
+	)
 
 	return (
 		<AppContext.Provider
@@ -88,8 +116,13 @@ function App() {
 				currentNote: { noteName, setNoteName }
 			}}
 		>
-			<div className="app-container">
-				<NameInput />
+			<main
+				className={`app-container ${isDragging ? "dragging" : ""}`}
+				onDragOver={(e) => handleDragOver(e, true)}
+				onDragLeave={(e) => handleDragOver(e, false)}
+				onDrop={handleDrop}
+			>
+				<TitleInput />
 				{isEditing && (
 					<Editor
 						language="markdown"
@@ -111,7 +144,7 @@ function App() {
 						<Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
 					</div>
 				)}
-			</div>
+			</main>
 			<hr color="darkgray" />
 			<div
 				style={{

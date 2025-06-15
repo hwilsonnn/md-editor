@@ -16,8 +16,8 @@ const defaultValue: AppContextValue = {
 	setIsEditing: () => {},
 	currentNote: {
 		noteName: null,
-		setNoteName: () => {},
-	},
+		setNoteName: () => {}
+	}
 }
 
 const AppContext = createContext<AppContextValue>(defaultValue)

@@ -1,7 +1,8 @@
 import { useContext } from "react"
-import AppContext from "./context"
+import AppContext from "../../context"
+import "./TitleInput.css"
 
-const NameInput = () => {
+const TitleInput = () => {
 	const {
 		currentNote: { noteName, setNoteName }
 	} = useContext(AppContext)
@@ -22,6 +23,8 @@ const NameInput = () => {
 				onBlur={() => {
 					if (noteName && noteName.length > 0) {
 						document.title = `${noteName} - Markdown Editor`
+					} else {
+						document.title = "Markdown Editor"
 					}
 				}}
 			/>
@@ -29,4 +32,4 @@ const NameInput = () => {
 	)
 }
 
-export default NameInput
+export default TitleInput
