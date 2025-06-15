@@ -10,7 +10,11 @@ import { BasicSetup } from "prism-react-editor/setups"
 import "prism-react-editor/prism/languages/markdown"
 // import "prism-react-editor/prism/languages/typescript"
 
-import { downloadTxtFile, handleFileDrop } from "./utils"
+import {
+	downloadTxtFile,
+	generateTableOfContents,
+	handleFileDrop
+} from "./utils"
 import AppContext from "./context"
 import TitleInput from "./components/TitleInput"
 
@@ -122,7 +126,19 @@ function App() {
 				onDragLeave={(e) => handleDragOver(e, false)}
 				onDrop={handleDrop}
 			>
-				<TitleInput />
+				<div className="title-bar">
+					<TitleInput />
+					{!isEditing && (
+						<button
+							style={{
+								whiteSpace: "nowrap"
+							}}
+							onClick={() => generateTableOfContents()}
+						>
+							☰ Contents
+						</button>
+					)}
+				</div>
 				{isEditing && (
 					<Editor
 						language="markdown"
@@ -136,13 +152,20 @@ function App() {
 					</Editor>
 				)}
 				{!isEditing && (
-					<div
-						id="my-markdown-area"
-						className="rendered-markdown"
-						onClick={() => setIsEditing(true)}
-					>
-						<Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
-					</div>
+					<>
+						<div
+							id="my-markdown-area"
+							className="rendered-markdown"
+							onClick={(e) => {
+								if (!(e.target instanceof HTMLAnchorElement)) {
+									setIsEditing(true)
+								}
+							}}
+						>
+							<div id="table-of-contents"></div>
+							<Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+						</div>
+					</>
 				)}
 			</main>
 			<hr color="darkgray" />

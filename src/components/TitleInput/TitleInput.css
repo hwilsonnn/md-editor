@@ -6,8 +6,6 @@
 	font-size: 20px;
 	padding: 10px;
 	color: lightgray;
-
-	margin-bottom: 5px;
 }
 
 .title-input:not(:focus) {

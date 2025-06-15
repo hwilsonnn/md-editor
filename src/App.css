@@ -44,6 +44,13 @@ button:hover {
 	}
 }
 
+.title-bar {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+	margin-bottom: 5px;
+}
+
 @media screen and (max-width: 800px) {
 	.app-container {
 		width: 95dvw;
