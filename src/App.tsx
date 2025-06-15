@@ -23,10 +23,7 @@ function App() {
 	const [content, setContent] = useState("")
 	const [isEditing, setIsEditing] = useState(true)
 	const [noteName, setNoteName] = useState("")
-	const [bottomBarVisible, setBottomBarVisible] = useState(false)
 	const [isDragging, setIsDragging] = useState(false)
-
-	const hideBottomBar = localStorage.getItem("hide-bottom-bar")
 
 	const escCallback = useCallback(
 		(e: KeyboardEvent) => {
@@ -42,7 +39,7 @@ function App() {
 	}, [content, noteName])
 
 	const unload = (e: BeforeUnloadEvent) => {
-		if (!window.confirm("are you sure you want to leave the page")) {
+		if (!window.confirm("Are you sure you want to leave the page?")) {
 			e.preventDefault()
 		}
 	}
@@ -70,6 +67,7 @@ function App() {
 			if (editor) {
 				editor.spellcheck = true
 			}
+			history.pushState(null, "", window.location.origin)
 		} else {
 			document.removeEventListener("keydown", escCallback, true)
 			setSavedValue(content)
@@ -173,28 +171,23 @@ function App() {
 				style={{
 					display: "flex",
 					flexDirection: "row",
-					justifyContent: "center",
+					justifyContent: "space-between",
+					alignItems: "center",
 					gap: "5px"
 				}}
 			>
-				{/* <button>💾 Save</button> */}
-				{/* <button>➕ New Note</button> */}
+				<span
+					style={{
+						fontSize: "0.875rem"
+					}}
+				>
+					{content.length === 0
+						? 0
+						: content.split(/\s|\\n/).filter((word) => word !== "").length}{" "}
+					words
+				</span>
 				<button onClick={() => downloadContent()}>⬇ Download</button>
 			</div>
-			{(!hideBottomBar || hideBottomBar !== "true") && (
-				<div className={`bottom-bar ${bottomBarVisible ? "open" : "closed"}`}>
-					<div className="bottom-activiation">
-						<button onClick={() => setBottomBarVisible(!bottomBarVisible)}>
-							{bottomBarVisible ? "v Close v" : "^ Open ^"}
-						</button>
-					</div>
-					<div className="bottom-content">
-						bottom bar content
-						<br />
-						sdoineoi
-					</div>
-				</div>
-			)}
 		</AppContext.Provider>
 	)
 }

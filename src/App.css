@@ -44,6 +44,12 @@ button:hover {
 	}
 }
 
+#table-of-contents {
+	ul {
+		margin: 0px;
+	}
+}
+
 .title-bar {
 	display: flex;
 	flex-direction: row;
@@ -54,34 +60,5 @@ button:hover {
 @media screen and (max-width: 800px) {
 	.app-container {
 		width: 95dvw;
-	}
-}
-
-.bottom-bar {
-	overflow: hidden;
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	width: 200px;
-	left: 50%;
-	transform: translate(-50%, 0);
-	transition: ease-in-out bottom 0.5s, ease-out margin-top 0.5s;
-
-	.bottom-activiation {
-		padding-bottom: 30px;
-	}
-	.bottom-content {
-		margin-top: 40px;
-		position: absolute;
-
-		width: 200px;
-	}
-
-	&.closed {
-		bottom: -20px;
-	}
-
-	&.open {
-		bottom: 10px;
 	}
 }
