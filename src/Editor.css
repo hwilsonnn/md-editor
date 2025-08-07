@@ -1,0 +1,7 @@
+div[contenteditable="true"] {
+	height: calc(100% - 44px);
+
+	&:focus-visible {
+		outline: none;
+	}
+}
