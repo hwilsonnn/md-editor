@@ -1,7 +1,43 @@
 div[contenteditable="true"] {
 	height: calc(100% - 44px);
+	flex: 1;
+	overflow-y: auto;
+	outline: none !important;
 
 	&:focus-visible {
 		outline: none;
+	}
+
+	&.dragging-over {
+		background-color: rgba(100, 200, 255, 0.1);
+		border: 2px dashed #4da6ff;
+	}
+}
+
+.editor-wrapper {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	transition: background-color 0.2s ease;
+
+	&.dragging {
+		background-color: rgba(100, 200, 255, 0.1);
+		border: 2px dashed #4da6ff;
+	}
+}
+
+.editor-toolbar {
+	display: flex;
+	gap: 8px;
+	padding: 8px;
+	border-bottom: 1px solid #303741;
+	background: #1e1e1e;
+	flex-wrap: wrap;
+	min-height: 44px;
+	align-items: center;
+	flex-shrink: 0;
+
+	button {
+		white-space: nowrap;
 	}
 }
