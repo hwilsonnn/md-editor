@@ -3,7 +3,7 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
-	"homepage": "https://hwilsonnn.github.io",
+	"homepage": "https://hwilsonnn.github.io/md-editor",
 	"scripts": {
 		"predeploy": "npm run build",
 		"deploy": "gh-pages -d dist",
