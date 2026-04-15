@@ -1,6 +1,13 @@
 import { useState } from "react"
 import { FileTreeNode } from "../../electron.d"
 
+const SELECTABLE_EXTENSIONS = [".md", ".txt", ".markdown"]
+
+function isSelectableFile(name: string): boolean {
+	const ext = name.slice(name.lastIndexOf(".")).toLowerCase()
+	return SELECTABLE_EXTENSIONS.includes(ext)
+}
+
 interface FileTreeProps {
 	nodes: FileTreeNode[]
 	currentFilePath: string | null
@@ -16,10 +23,10 @@ const FileTree = ({
 	onDeleteFile,
 	depth = 0
 }: FileTreeProps) => {
-	const [collapsedDirs, setCollapsedDirs] = useState<Set<string>>(new Set())
+	const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set())
 
 	const toggleDir = (path: string) => {
-		setCollapsedDirs((prev) => {
+		setExpandedDirs((prev) => {
 			const next = new Set(prev)
 			if (next.has(path)) {
 				next.delete(path)
@@ -41,11 +48,11 @@ const FileTree = ({
 								onClick={() => toggleDir(node.path)}
 							>
 								<span className="file-tree-icon">
-									{collapsedDirs.has(node.path) ? "▶" : "▼"}
+									{expandedDirs.has(node.path) ? "▼" : "▶"}
 								</span>
 								📁 {node.name}
 							</button>
-							{!collapsedDirs.has(node.path) && node.children && (
+							{expandedDirs.has(node.path) && node.children && (
 								<FileTree
 									nodes={node.children}
 									currentFilePath={currentFilePath}
@@ -56,25 +63,33 @@ const FileTree = ({
 							)}
 						</>
 					) : (
-						<div
-							className={`file-tree-file ${
-								currentFilePath === node.path ? "file-tree-active" : ""
-							}`}
-						>
-							<button
-								className="file-tree-file-btn"
-								onClick={() => onSelectFile(node.path)}
-							>
-								📄 {node.name}
-							</button>
-							<button
-								className="file-tree-delete"
-								onClick={() => onDeleteFile(node.path)}
-								title="Delete file"
-							>
-								🗑
-							</button>
-						</div>
+						(() => {
+							const selectable = isSelectableFile(node.name)
+							return (
+								<div
+									className={`file-tree-file ${
+										currentFilePath === node.path ? "file-tree-active" : ""
+									} ${!selectable ? "file-tree-disabled" : ""}`}
+								>
+									<button
+										className="file-tree-file-btn"
+										onClick={() => selectable && onSelectFile(node.path)}
+										disabled={!selectable}
+									>
+										📄 {node.name}
+									</button>
+									{selectable && (
+										<button
+											className="file-tree-delete"
+											onClick={() => onDeleteFile(node.path)}
+											title="Delete file"
+										>
+											🗑
+										</button>
+									)}
+								</div>
+							)
+						})()
 					)}
 				</li>
 			))}

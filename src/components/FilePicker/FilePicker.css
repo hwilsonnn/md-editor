@@ -159,6 +159,20 @@
 	opacity: 1 !important;
 }
 
+.file-tree-file.file-tree-disabled {
+	opacity: 0.4;
+}
+
+.file-tree-file.file-tree-disabled .file-tree-file-btn {
+	cursor: default;
+	color: #666;
+}
+
+.file-tree-file.file-tree-disabled .file-tree-file-btn {
+	cursor: default;
+	color: #666;
+}
+
 .recent-directories {
 	margin-top: 12px;
 }

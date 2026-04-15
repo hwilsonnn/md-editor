@@ -51,14 +51,11 @@ async function listFilesRecursive(dirPath: string): Promise<FileTreeNode[]> {
 				})
 			}
 		} else {
-			const ext = path.extname(entry.name).toLowerCase()
-			if (MARKDOWN_EXTENSIONS.includes(ext)) {
-				nodes.push({
-					name: entry.name,
-					path: fullPath,
-					isDirectory: false
-				})
-			}
+			nodes.push({
+				name: entry.name,
+				path: fullPath,
+				isDirectory: false
+			})
 		}
 	}
 
