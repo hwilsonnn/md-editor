@@ -1,62 +1,78 @@
-export const downloadTxtFile = (fileContent: string, fileName?: string) => {
-	const element = document.createElement("a")
-	const file = new Blob([fileContent], { type: "text/markdown" })
-	element.href = URL.createObjectURL(file)
-	element.download = `${(fileName && fileName.length > 0
-		? fileName
-		: "markdown"
-	).replaceAll(" ", "_")}-${new Date().toISOString()}.md`
-	document.body.appendChild(element) // Required for this to work in FireFox
-	element.click()
-}
-
 const parseFileName = (fileName: string) => {
 	const match = fileName.match(/^([^-]+)/)
 	return match?.[1].replaceAll("_", " ") ?? fileName
 }
 
-export const handleFileDrop = (
+export const handleFileDrop = async (
 	files: FileList,
 	setContent: (content: string) => void,
-	setFileName: (fileName: string) => void
+	setFileName: (fileName: string) => void,
+	openedDirectory: string | null
 ) => {
 	if (files && files.length > 0) {
 		const file = files[0]
-		const supportedTypes = [
-			"text/plain",
-			"text/markdown",
-			"text/x-markdown",
+
+		const markdownTypes = ["text/plain", "text/markdown", "text/x-markdown"]
+		const scratchpadTypes = [
+			...markdownTypes,
 			"application/json",
 			"application/xml",
 			"text/csv",
 			"text/html"
 		]
 
-		// For some reason my experience is that the file type doesn't always seem to be populated
-		if (!supportedTypes.includes(file.type) && !/.*\.md$/.test(file.name)) {
-			alert(
-				"Unsupported file type. Please drop a plain text, markdown, JSON, XML, CSV, or HTML file."
-			)
-			return
-		}
+		const allowedTypes = openedDirectory ? markdownTypes : scratchpadTypes
 
 		if (
-			file.size > 0 &&
-			window.confirm(
-				"Are you sure you want to replace the current content with the dropped file?"
-			)
+			!allowedTypes.includes(file.type) &&
+			!/\.(md|txt|markdown)$/i.test(file.name) &&
+			(openedDirectory || !/\.(json|xml|csv|html)$/i.test(file.name))
 		) {
-			const reader = new FileReader()
-			reader.onload = (event) => {
-				const text = event.target?.result as string
+			await window.electronAPI?.showMessageBox({
+				type: "warning",
+				buttons: ["OK"],
+				title: "Unsupported File",
+				message: openedDirectory
+					? "In directory mode, only markdown/text files can be dropped."
+					: "Unsupported file type. Please drop a plain text, markdown, JSON, XML, CSV, or HTML file."
+			})
+			return null
+		}
 
-				setContent(text)
-			}
-			reader.readAsText(file)
+		const confirm = await window.electronAPI?.showMessageBox({
+			type: "question",
+			buttons: ["Yes", "No"],
+			defaultId: 0,
+			title: "Replace Content",
+			message:
+				"Are you sure you want to replace the current content with the dropped file?"
+		})
 
+		if (confirm !== 0 || file.size === 0) return null
+
+		// Use Electron's File.path to get the real filesystem path
+		const filePath = (file as File & { path: string }).path
+
+		if (filePath && window.electronAPI) {
+			const fileContent = await window.electronAPI.readFile(filePath)
+			setContent(fileContent)
 			setFileName(parseFileName(file.name))
+			return filePath
+		} else {
+			// Fallback to FileReader
+			return new Promise<null>((resolve) => {
+				const reader = new FileReader()
+				reader.onload = (event) => {
+					const text = event.target?.result as string
+					setContent(text)
+					setFileName(parseFileName(file.name))
+					resolve(null)
+				}
+				reader.readAsText(file)
+			})
 		}
 	}
+	return null
 }
 
 export const generateTableOfContents = () => {

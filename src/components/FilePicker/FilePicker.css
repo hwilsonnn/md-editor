@@ -1,0 +1,201 @@
+.file-picker-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.file-picker-modal {
+	background: #1e1e2e;
+	border: 1px solid #444;
+	border-radius: 8px;
+	width: 500px;
+	max-height: 70vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.file-picker-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	border-bottom: 1px solid #333;
+}
+
+.file-picker-header h2 {
+	margin: 0;
+	font-size: 1.1rem;
+}
+
+.file-picker-close {
+	font-size: 1rem;
+	cursor: pointer;
+	padding: 4px 8px !important;
+}
+
+.file-picker-content {
+	padding: 12px 16px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.file-picker-open-dir {
+	width: 100%;
+	text-align: left;
+	padding: 10px 12px !important;
+	margin-bottom: 8px;
+	border: 1px dashed #555 !important;
+	border-radius: 6px;
+	font-size: 0.95rem;
+}
+
+.file-picker-current-dir {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 6px 0;
+	font-size: 0.85rem;
+	color: #aaa;
+	margin-bottom: 8px;
+}
+
+.dir-label {
+	flex-shrink: 0;
+	color: #888;
+}
+
+.dir-path {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.file-picker-actions {
+	margin-bottom: 8px;
+}
+
+.new-file-input-row {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+}
+
+.new-file-input {
+	flex: 1;
+	background: #2a2a3a;
+	border: 1px solid #555;
+	border-radius: 4px;
+	padding: 6px 8px;
+	color: #ddd;
+	font-size: 0.9rem;
+}
+
+.file-tree-container {
+	max-height: 40vh;
+	overflow-y: auto;
+}
+
+.file-tree {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.file-tree-item {
+	margin: 1px 0;
+}
+
+.file-tree-dir {
+	width: 100%;
+	text-align: left;
+	padding: 4px 8px !important;
+	font-size: 0.9rem;
+}
+
+.file-tree-icon {
+	display: inline-block;
+	width: 14px;
+	font-size: 0.7rem;
+	margin-right: 4px;
+}
+
+.file-tree-file {
+	display: flex;
+	align-items: center;
+	border-radius: 4px;
+}
+
+.file-tree-file.file-tree-active {
+	background: #333355;
+}
+
+.file-tree-file-btn {
+	flex: 1;
+	text-align: left;
+	padding: 4px 8px !important;
+	font-size: 0.9rem;
+}
+
+.file-tree-delete {
+	opacity: 0;
+	padding: 4px !important;
+	font-size: 0.8rem;
+	transition: opacity 0.15s;
+}
+
+.file-tree-file:hover .file-tree-delete {
+	opacity: 0.7;
+}
+
+.file-tree-delete:hover {
+	opacity: 1 !important;
+}
+
+.recent-directories {
+	margin-top: 12px;
+}
+
+.recent-directories h3 {
+	font-size: 0.9rem;
+	color: #888;
+	margin: 0 0 8px 0;
+}
+
+.recent-directories ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.recent-directories li {
+	display: flex;
+	align-items: center;
+}
+
+.recent-dir-btn {
+	flex: 1;
+	text-align: left;
+	padding: 6px 8px !important;
+	font-size: 0.85rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.recent-dir-remove {
+	opacity: 0.4;
+	padding: 4px 8px !important;
+	font-size: 0.8rem;
+}
+
+.recent-dir-remove:hover {
+	opacity: 1;
+}

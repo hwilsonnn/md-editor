@@ -4,8 +4,12 @@ import "./TitleInput.css"
 
 const TitleInput = () => {
 	const {
-		currentNote: { noteName, setNoteName }
+		currentNote: { noteName, setNoteName },
+		currentFilePath,
+		isDirty
 	} = useContext(AppContext)
+
+	const isDirectoryMode = currentFilePath !== null
 
 	return (
 		<div
@@ -19,12 +23,19 @@ const TitleInput = () => {
 				value={noteName ?? ""}
 				className="title-input"
 				placeholder="Note name"
-				onInput={(e) => setNoteName((e.target as HTMLInputElement).value)}
+				readOnly={isDirectoryMode}
+				onInput={(e) => {
+					if (!isDirectoryMode) {
+						setNoteName((e.target as HTMLInputElement).value)
+					}
+				}}
 				onBlur={() => {
 					if (noteName && noteName.length > 0) {
-						document.title = `${noteName} - Markdown Editor`
+						window.electronAPI?.setTitle(
+							`${isDirty ? "● " : ""}${noteName} - Markdown Editor`
+						)
 					} else {
-						document.title = "Markdown Editor"
+						window.electronAPI?.setTitle("Markdown Editor")
 					}
 				}}
 			/>
