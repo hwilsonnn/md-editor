@@ -1,0 +1,58 @@
+.menu-wrapper {
+	position: relative;
+}
+
+.menu-button {
+	font-size: 18px;
+	padding: 2px 8px !important;
+	line-height: 1;
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.menu-button:hover {
+	color: rgba(255, 255, 255, 0.87);
+}
+
+.menu-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 99;
+}
+
+.menu-dropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	z-index: 100;
+	min-width: 180px;
+	background: #1e1e1e;
+	border: 1px solid #3a3a3a;
+	border-radius: 8px;
+	padding: 4px;
+	margin-top: 4px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.menu-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 6px 10px !important;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.87);
+	text-align: left;
+	border-radius: 6px;
+}
+
+.menu-divider {
+	height: 1px;
+	background: #3a3a3a;
+	margin: 4px 0;
+}
+
+.menu-label {
+	padding: 4px 10px;
+	font-size: 11px;
+	color: rgba(255, 255, 255, 0.4);
+}

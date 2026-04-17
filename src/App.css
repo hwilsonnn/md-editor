@@ -10,7 +10,7 @@ body {
 
 hr {
 	color: #303741;
-	margin: 16px 0;
+	margin: 8px 0;
 	border-top: 0px;
 }
 
@@ -29,7 +29,7 @@ button:hover {
 
 .app-container {
 	max-width: 1280px;
-	height: 85dvh;
+	height: 95dvh;
 	width: 75dvw;
 	text-align: left;
 	transition: ease width 0.1s;
@@ -53,8 +53,9 @@ button:hover {
 .title-bar {
 	display: flex;
 	flex-direction: row;
-	gap: 5px;
-	margin-bottom: 5px;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 4px;
 }
 
 @media screen and (max-width: 800px) {

@@ -5,7 +5,7 @@
 	line-height: 1.5;
 	font-weight: 400;
 
-	color-scheme: light dark;
+	color-scheme: dark;
 	color: rgba(255, 255, 255, 0.87);
 	background-color: #242424;
 
@@ -13,6 +13,37 @@
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #555 transparent;
+}
+
+*::-webkit-scrollbar,
+.prism-code-editor::-webkit-scrollbar,
+.prism-code-editor *::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+*::-webkit-scrollbar-track,
+.prism-code-editor::-webkit-scrollbar-track,
+.prism-code-editor *::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb,
+.prism-code-editor::-webkit-scrollbar-thumb,
+.prism-code-editor *::-webkit-scrollbar-thumb {
+	background: #555;
+	border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+.prism-code-editor::-webkit-scrollbar-thumb:hover,
+.prism-code-editor *::-webkit-scrollbar-thumb:hover {
+	background: #777;
 }
 
 a {

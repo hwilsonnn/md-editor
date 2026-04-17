@@ -12,6 +12,7 @@ import { generateTableOfContents, resolveImageSrc } from "./utils"
 import AppContext from "./context"
 import TitleInput from "./components/TitleInput"
 import FilePicker from "./components/FilePicker"
+import Menu from "./components/Menu"
 import { useFileManager } from "./hooks/useFileManager"
 import { useEditorShortcuts } from "./hooks/useEditorShortcuts"
 
@@ -68,21 +69,35 @@ function App() {
 			>
 				<div className="title-bar">
 					<TitleInput />
-					<button
-						style={{ whiteSpace: "nowrap" }}
-						onClick={() => fm.setFilePickerOpen(true)}
-						title="Open files (Ctrl+O)"
-					>
-						📂 Files
-					</button>
-					{!fm.isEditing && (
-						<button
-							style={{ whiteSpace: "nowrap" }}
-							onClick={() => generateTableOfContents()}
-						>
-							☰ Contents
-						</button>
-					)}
+					<Menu
+						items={[
+							{
+								icon: "💾",
+								label: `Save${fm.isDirty ? " ●" : ""}`,
+								onClick: () => fm.handleSave()
+							},
+							{
+								icon: "📂",
+								label: "Files",
+								onClick: () => fm.setFilePickerOpen(true)
+							},
+							...(!fm.isEditing
+								? [
+										{
+											icon: "☰",
+											label: "Contents",
+											onClick: () => generateTableOfContents()
+										}
+									]
+								: [])
+						]}
+						wordCount={
+							fm.content.length === 0
+								? 0
+								: fm.content.split(/\s|\\n/).filter((word) => word !== "")
+										.length
+						}
+					/>
 				</div>
 				{fm.isEditing && (
 					<Editor
@@ -118,29 +133,6 @@ function App() {
 					</>
 				)}
 			</main>
-			<hr color="darkgray" />
-			<div
-				style={{
-					display: "flex",
-					flexDirection: "row",
-					justifyContent: "space-between",
-					alignItems: "center",
-					gap: "5px"
-				}}
-			>
-				<span
-					style={{
-						fontSize: "0.875rem"
-					}}
-				>
-					{fm.content.length === 0
-						? 0
-						: fm.content.split(/\s|\\n/).filter((word) => word !== "")
-								.length}{" "}
-					words
-				</span>
-				<button onClick={() => fm.handleSave()}>💾 Save</button>
-			</div>
 
 			<FilePicker
 				isOpen={fm.filePickerOpen}
