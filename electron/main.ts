@@ -8,6 +8,8 @@ import {
 	Menu,
 	MenuItemConstructorOptions,
 	MessageBoxOptions,
+	net,
+	protocol,
 	shell
 } from "electron"
 import path from "path"
@@ -159,6 +161,8 @@ function createWindow(): void {
 		shell.openExternal(url)
 		return { action: "deny" }
 	})
+
+	mainWindow.webContents.openDevTools()
 
 	if (process.env.ELECTRON_RENDERER_URL) {
 		mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
@@ -323,7 +327,34 @@ ipcMain.on("set-title", (_event: IpcMainEvent, title: string) => {
 
 // --- App lifecycle ---
 
+protocol.registerSchemesAsPrivileged([
+	{
+		scheme: "md-asset",
+		privileges: {
+			standard: true,
+			secure: true,
+			supportFetchAPI: true,
+			bypassCSP: false,
+			stream: true
+		}
+	}
+])
+
 app.whenReady().then(() => {
+	protocol.handle("md-asset", (request) => {
+		// Chromium parses md-asset:///C:/path as host="c", pathname="/path"
+		// Reconstruct the full path from host (drive letter) + pathname
+		const url = new URL(request.url)
+		const filePath = `${url.host.toUpperCase()}:${decodeURIComponent(url.pathname)}`
+		console.log("[md-asset] request:", request.url, "-> filePath:", filePath)
+		// Security: only serve files within the current open directory
+		if (currentDirectory && !isPathWithin(filePath, currentDirectory)) {
+			console.warn("[md-asset] forbidden:", filePath)
+			return new Response("Forbidden", { status: 403 })
+		}
+		return net.fetch(`file:///${filePath}`)
+	})
+
 	buildMenu()
 	createWindow()
 

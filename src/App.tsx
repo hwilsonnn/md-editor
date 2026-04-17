@@ -1,14 +1,14 @@
 import "./App.css"
 import "./prism.css"
 import "./formattedMarkdown.css"
-import Markdown from "react-markdown"
+import Markdown, { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Editor } from "prism-react-editor"
 import { BasicSetup } from "prism-react-editor/setups"
 
 import "prism-react-editor/prism/languages/markdown"
 
-import { generateTableOfContents } from "./utils"
+import { generateTableOfContents, resolveImageSrc } from "./utils"
 import AppContext from "./context"
 import TitleInput from "./components/TitleInput"
 import FilePicker from "./components/FilePicker"
@@ -35,6 +35,16 @@ function App() {
 		handleOpenDirectory: fm.handleOpenDirectory,
 		handleCloseDirectory: fm.handleCloseDirectory
 	})
+
+	const markdownComponents: Components = {
+		img: ({ src, alt, ...props }) => (
+			<img
+				src={resolveImageSrc(src, fm.currentFilePath)}
+				alt={alt}
+				{...props}
+			/>
+		)
+	}
 
 	return (
 		<AppContext.Provider
@@ -98,7 +108,12 @@ function App() {
 							}}
 						>
 							<div id="table-of-contents"></div>
-							<Markdown remarkPlugins={[remarkGfm]}>{fm.content}</Markdown>
+							<Markdown
+								remarkPlugins={[remarkGfm]}
+								components={markdownComponents}
+							>
+								{fm.content}
+							</Markdown>
 						</div>
 					</>
 				)}

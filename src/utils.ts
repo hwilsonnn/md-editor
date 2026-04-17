@@ -3,6 +3,44 @@ const parseFileName = (fileName: string) => {
 	return match?.[1].replaceAll("_", " ") ?? fileName
 }
 
+/**
+ * Resolves an image src from markdown relative to the current file's directory.
+ * Absolute URLs (http/https/data) are returned as-is.
+ * Relative paths are converted to the md-asset:// protocol for Electron to serve.
+ */
+export function resolveImageSrc(
+	src: string | undefined,
+	currentFilePath: string | null
+): string | undefined {
+	if (!src) return src
+	// Absolute URLs / data URIs — leave as-is
+	if (/^(https?:|data:|blob:)/i.test(src)) return src
+	if (!currentFilePath) return src
+
+	// Get the directory of the current file
+	const dir = currentFilePath.substring(
+		0,
+		Math.max(
+			currentFilePath.lastIndexOf("/"),
+			currentFilePath.lastIndexOf("\\")
+		)
+	)
+
+	// Normalize to forward slashes and combine
+	const combined = `${dir}/${src}`.replace(/\\/g, "/")
+
+	// Resolve . and .. segments
+	const parts = combined.split("/")
+	const resolved: string[] = []
+	for (const part of parts) {
+		if (part === "..") resolved.pop()
+		else if (part !== "." && part !== "") resolved.push(part)
+	}
+
+	const absolutePath = resolved.join("/")
+	return `md-asset:///${absolutePath}`
+}
+
 export const handleFileDrop = async (
 	files: FileList,
 	setContent: (content: string) => void,
