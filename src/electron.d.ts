@@ -13,6 +13,9 @@ export interface ElectronAPI {
 	saveFileAs: (content: string, defaultName: string) => Promise<string | null>
 	createFile: (dirPath: string, fileName: string) => Promise<string>
 	deleteFile: (filePath: string) => Promise<boolean>
+	createDirectory: (parentPath: string, folderName: string) => Promise<string>
+	moveFile: (sourcePath: string, targetDir: string) => Promise<string>
+	copyImageToDir: (sourcePath: string, targetDir: string) => Promise<string>
 	showMessageBox: (options: {
 		type?: string
 		buttons?: string[]

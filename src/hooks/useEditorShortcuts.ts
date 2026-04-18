@@ -3,11 +3,25 @@ import { handleFileDrop } from "../utils"
 
 const api = window.electronAPI
 
+const IMAGE_MIME_TYPES = [
+	"image/jpeg",
+	"image/png",
+	"image/gif",
+	"image/webp",
+	"image/svg+xml",
+	"image/bmp"
+]
+const IMAGE_EXT_RE = /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i
+
 interface UseEditorShortcutsOptions {
 	isEditing: boolean
 	setIsEditing: (v: boolean) => void
+	switchToEdit: () => void
+	switchToPreview: () => void
 	isDirectoryMode: boolean
 	openedDirectory: string | null
+	currentFilePath: string | null
+	content: string
 	setFilePickerOpen: (v: boolean) => void
 	setContent: (v: string) => void
 	setSavedValue: (v: string) => void
@@ -24,8 +38,12 @@ interface UseEditorShortcutsOptions {
 export function useEditorShortcuts({
 	isEditing,
 	setIsEditing,
+	switchToEdit,
+	switchToPreview,
 	isDirectoryMode,
 	openedDirectory,
+	currentFilePath,
+	content,
 	setFilePickerOpen,
 	setContent,
 	setSavedValue,
@@ -61,7 +79,11 @@ export function useEditorShortcuts({
 					handleCloseDirectory()
 					break
 				case "toggle-view":
-					setIsEditing(!isEditing)
+					if (isEditing) {
+						switchToPreview()
+					} else {
+						switchToEdit()
+					}
 					break
 			}
 		})
@@ -73,7 +95,8 @@ export function useEditorShortcuts({
 		handleCloseDirectory,
 		isDirectoryMode,
 		isEditing,
-		setIsEditing,
+		switchToEdit,
+		switchToPreview,
 		setFilePickerOpen
 	])
 
@@ -93,12 +116,12 @@ export function useEditorShortcuts({
 				handleOpenDirectory()
 			}
 			if (e.code === "Escape" && isEditing) {
-				setIsEditing(false)
+				switchToPreview()
 			}
 		}
 		document.addEventListener("keydown", handleKeyDown)
 		return () => document.removeEventListener("keydown", handleKeyDown)
-	}, [handleSave, handleSaveAs, handleOpenDirectory, isEditing, setIsEditing])
+	}, [handleSave, handleSaveAs, handleOpenDirectory, isEditing, switchToPreview])
 
 	// Drag and drop
 	const handleDragOver = useCallback(
@@ -115,6 +138,58 @@ export function useEditorShortcuts({
 			e.preventDefault()
 			e.stopPropagation()
 			setIsDragging(false)
+
+			const files = e.dataTransfer.files
+			if (!files || files.length === 0) return
+
+			const file = files[0]
+
+			// Handle image drops in edit mode
+			if (
+				IMAGE_MIME_TYPES.includes(file.type) ||
+				IMAGE_EXT_RE.test(file.name)
+			) {
+				if (isEditing && currentFilePath && api) {
+					const filePath = (file as File & { path: string }).path
+					const currentDir = currentFilePath.substring(
+						0,
+						Math.max(
+							currentFilePath.lastIndexOf("/"),
+							currentFilePath.lastIndexOf("\\")
+						)
+					)
+					try {
+						const filename = await api.copyImageToDir(filePath, currentDir)
+						const textarea =
+							document.querySelector<HTMLTextAreaElement>("textarea")
+						const cursorPos = textarea?.selectionStart ?? content.length
+						const imageMarkdown = `![${filename}](./${filename})`
+						const newContent =
+							content.slice(0, cursorPos) +
+							imageMarkdown +
+							content.slice(cursorPos)
+						setSavedValue(newContent)
+						setContent(newContent)
+						setIsDirty(true)
+					} catch (err) {
+						await api.showMessageBox({
+							type: "error",
+							buttons: ["OK"],
+							title: "Image Error",
+							message: `Failed to insert image: ${err instanceof Error ? err.message : String(err)}`
+						})
+					}
+				} else {
+					await api?.showMessageBox({
+						type: "warning",
+						buttons: ["OK"],
+						title: "Image Drop",
+						message:
+							"Open a file in edit mode to insert images at the cursor."
+					})
+				}
+				return
+			}
 
 			const droppedFilePath = await handleFileDrop(
 				e.dataTransfer.files,
@@ -137,6 +212,9 @@ export function useEditorShortcuts({
 			}
 		},
 		[
+			isEditing,
+			currentFilePath,
+			content,
 			openedDirectory,
 			setIsDragging,
 			setContent,

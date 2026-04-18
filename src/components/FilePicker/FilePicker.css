@@ -82,6 +82,11 @@
 	margin-bottom: 8px;
 }
 
+.file-picker-action-buttons {
+	display: flex;
+	gap: 4px;
+}
+
 .new-file-input-row {
 	display: flex;
 	gap: 4px;
@@ -111,6 +116,18 @@
 
 .file-tree-item {
 	margin: 1px 0;
+}
+
+.file-tree-dir-row {
+	display: flex;
+	align-items: center;
+	border-radius: 4px;
+	transition: background 0.15s;
+}
+
+.file-tree-dir-row.file-tree-drop-target {
+	background: #333355;
+	outline: 1px dashed #6666aa;
 }
 
 .file-tree-dir {

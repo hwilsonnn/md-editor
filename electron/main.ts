@@ -44,14 +44,12 @@ async function listFilesRecursive(dirPath: string): Promise<FileTreeNode[]> {
 
 		if (entry.isDirectory()) {
 			const children = await listFilesRecursive(fullPath)
-			if (children.length > 0) {
-				nodes.push({
-					name: entry.name,
-					path: fullPath,
-					isDirectory: true,
-					children
-				})
-			}
+			nodes.push({
+				name: entry.name,
+				path: fullPath,
+				isDirectory: true,
+				children
+			})
 		} else {
 			nodes.push({
 				name: entry.name,
@@ -283,6 +281,54 @@ ipcMain.handle(
 			return true
 		}
 		return false
+	}
+)
+
+ipcMain.handle(
+	"create-directory",
+	async (_event: IpcMainInvokeEvent, parentPath: string, folderName: string) => {
+		if (currentDirectory && !isPathWithin(parentPath, currentDirectory)) {
+			throw new Error("Access denied: path is outside the opened directory")
+		}
+		const dirPath = path.join(parentPath, folderName)
+		await fs.mkdir(dirPath, { recursive: false })
+		return dirPath
+	}
+)
+
+ipcMain.handle(
+	"move-file",
+	async (_event: IpcMainInvokeEvent, sourcePath: string, targetDir: string) => {
+		if (currentDirectory) {
+			if (!isPathWithin(sourcePath, currentDirectory)) {
+				throw new Error("Access denied: source is outside the opened directory")
+			}
+			if (!isPathWithin(targetDir, currentDirectory)) {
+				throw new Error("Access denied: target is outside the opened directory")
+			}
+		}
+		const filename = path.basename(sourcePath)
+		const targetPath = path.join(targetDir, filename)
+		await fs.rename(sourcePath, targetPath)
+		return targetPath
+	}
+)
+
+ipcMain.handle(
+	"copy-image-to-dir",
+	async (_event: IpcMainInvokeEvent, sourcePath: string, targetDir: string) => {
+		if (currentDirectory && !isPathWithin(targetDir, currentDirectory)) {
+			throw new Error("Access denied: target is outside the opened directory")
+		}
+		const filename = path.basename(sourcePath)
+		const targetPath = path.join(targetDir, filename)
+		// If file already exists, just return the filename without copying
+		try {
+			await fs.access(targetPath)
+		} catch {
+			await fs.copyFile(sourcePath, targetPath)
+		}
+		return filename
 	}
 )
 

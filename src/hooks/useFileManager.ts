@@ -224,6 +224,48 @@ export function useFileManager() {
 		[openedDirectory, refreshFileTree, handleSelectFile]
 	)
 
+	// Create directory in directory
+	const handleCreateDirectory = useCallback(
+		async (parentPath: string, folderName: string) => {
+			try {
+				await api.createDirectory(parentPath, folderName)
+				if (openedDirectory) await refreshFileTree(openedDirectory)
+			} catch (err) {
+				await api.showMessageBox({
+					type: "error",
+					buttons: ["OK"],
+					title: "Create Error",
+					message: `Failed to create folder: ${err instanceof Error ? err.message : String(err)}`
+				})
+			}
+		},
+		[openedDirectory, refreshFileTree]
+	)
+
+	// Move file or directory
+	const handleMoveFile = useCallback(
+		async (sourcePath: string, targetDir: string) => {
+			try {
+				const newPath = await api.moveFile(sourcePath, targetDir)
+				if (openedDirectory) await refreshFileTree(openedDirectory)
+				// Update currentFilePath if the moved file was open
+				if (currentFilePath === sourcePath) {
+					setCurrentFilePath(newPath)
+					const newPathName = newPath.split(/[/\\]/).pop() ?? ""
+				updateWindowTitle(isDirty, newPathName || undefined, openedDirectory)
+				}
+			} catch (err) {
+				await api.showMessageBox({
+					type: "error",
+					buttons: ["OK"],
+					title: "Move Error",
+					message: `Failed to move: ${err instanceof Error ? err.message : String(err)}`
+				})
+			}
+		},
+		[openedDirectory, currentFilePath, isDirty, refreshFileTree, updateWindowTitle]
+	)
+
 	// Delete file
 	const handleDeleteFile = useCallback(
 		async (filePath: string) => {
@@ -316,6 +358,8 @@ export function useFileManager() {
 		handleSelectFile,
 		handleCreateFile,
 		handleDeleteFile,
+		handleCreateDirectory,
+		handleMoveFile,
 		handleCloseDirectory,
 		handleRemoveRecentDir
 	}
