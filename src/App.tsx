@@ -22,7 +22,7 @@ const CLICK_MATCH_MAX_LEN = 60
 const CLICK_MATCH_MIN_LEN = 8
 	const fm = useFileManager()
 
-	// Scroll position refs for maintaining position between views
+	// Scroll position refs for maintaining position between views (stored as 0–1 fraction)
 	const editorScrollRef = useRef(0)
 	const previewScrollRef = useRef(0)
 	// Target line to jump to after switching to edit mode
@@ -30,14 +30,22 @@ const CLICK_MATCH_MIN_LEN = 8
 
 	// Wrapper to switch views while saving/restoring scroll positions
 	const switchToEdit = (targetLine = -1) => {
-		previewScrollRef.current = window.scrollY
+		const scrollable =
+			document.documentElement.scrollHeight -
+			document.documentElement.clientHeight
+		previewScrollRef.current =
+			scrollable > 0 ? window.scrollY / scrollable : 0
 		pendingLineRef.current = targetLine
 		fm.setIsEditing(true)
 	}
 
 	const switchToPreview = () => {
 		const editorEl = document.querySelector(".prism-code-editor")
-		if (editorEl) editorScrollRef.current = editorEl.scrollTop
+		if (editorEl) {
+			const scrollable = editorEl.scrollHeight - editorEl.clientHeight
+			editorScrollRef.current =
+				scrollable > 0 ? editorEl.scrollTop / scrollable : 0
+		}
 		fm.setIsEditing(false)
 	}
 
@@ -47,7 +55,10 @@ const CLICK_MATCH_MIN_LEN = 8
 			// Switched to edit — restore editor scroll, optionally jump to line
 			requestAnimationFrame(() => {
 				const editorEl = document.querySelector(".prism-code-editor")
-				if (editorEl) editorEl.scrollTop = editorScrollRef.current
+				if (editorEl) {
+					const scrollable = editorEl.scrollHeight - editorEl.clientHeight
+					editorEl.scrollTop = editorScrollRef.current * scrollable
+				}
 
 				if (pendingLineRef.current >= 0) {
 					const lineNum = pendingLineRef.current
@@ -67,9 +78,12 @@ const CLICK_MATCH_MIN_LEN = 8
 				}
 			})
 		} else {
-			// Switched to preview — restore preview scroll
+			// Switched to preview — restore preview scroll as percentage of new scrollable height
 			requestAnimationFrame(() => {
-				window.scrollTo(0, previewScrollRef.current)
+				const scrollable =
+					document.documentElement.scrollHeight -
+					document.documentElement.clientHeight
+				window.scrollTo(0, previewScrollRef.current * scrollable)
 			})
 		}
 	}, [fm.isEditing])
