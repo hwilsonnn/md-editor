@@ -12,6 +12,8 @@ interface FilePickerProps {
 	onSelectFile: (filePath: string) => void
 	onCreateFile: (dirPath: string, fileName: string) => void
 	onDeleteFile: (filePath: string) => void
+	onCreateDirectory: (parentPath: string, folderName: string) => void
+	onMoveFile: (sourcePath: string, targetDir: string) => void
 	fileTree: FileTreeNode[]
 	recentDirectories: string[]
 	onRemoveRecentDir: (dir: string) => void
@@ -27,6 +29,8 @@ const FilePicker = ({
 	onSelectFile,
 	onCreateFile,
 	onDeleteFile,
+	onCreateDirectory,
+	onMoveFile,
 	fileTree,
 	recentDirectories,
 	onRemoveRecentDir,
@@ -34,6 +38,8 @@ const FilePicker = ({
 }: FilePickerProps) => {
 	const [newFileName, setNewFileName] = useState("")
 	const [isCreating, setIsCreating] = useState(false)
+	const [newFolderName, setNewFolderName] = useState("")
+	const [isCreatingFolder, setIsCreatingFolder] = useState(false)
 
 	if (!isOpen) return null
 
@@ -46,6 +52,13 @@ const FilePicker = ({
 		onCreateFile(openedDirectory, name)
 		setNewFileName("")
 		setIsCreating(false)
+	}
+
+	const handleCreateFolder = () => {
+		if (!newFolderName.trim() || !openedDirectory) return
+		onCreateDirectory(openedDirectory, newFolderName.trim())
+		setNewFolderName("")
+		setIsCreatingFolder(false)
 	}
 
 	return (
@@ -89,10 +102,33 @@ const FilePicker = ({
 										<button onClick={handleCreateFile}>✓</button>
 										<button onClick={() => setIsCreating(false)}>✕</button>
 									</div>
+								) : isCreatingFolder ? (
+									<div className="new-file-input-row">
+										<input
+											className="new-file-input"
+											value={newFolderName}
+											onChange={(e) => setNewFolderName(e.target.value)}
+											onKeyDown={(e) => {
+												if (e.key === "Enter") handleCreateFolder()
+												if (e.key === "Escape") setIsCreatingFolder(false)
+											}}
+											placeholder="folder name"
+											autoFocus
+										/>
+										<button onClick={handleCreateFolder}>✓</button>
+										<button onClick={() => setIsCreatingFolder(false)}>
+											✕
+										</button>
+									</div>
 								) : (
-									<button onClick={() => setIsCreating(true)}>
-										+ New File
-									</button>
+									<div className="file-picker-action-buttons">
+										<button onClick={() => setIsCreating(true)}>
+											+ New File
+										</button>
+										<button onClick={() => setIsCreatingFolder(true)}>
+											+ New Folder
+										</button>
+									</div>
 								)}
 							</div>
 
@@ -105,6 +141,7 @@ const FilePicker = ({
 										onClose()
 									}}
 									onDeleteFile={onDeleteFile}
+									onMoveFile={onMoveFile}
 								/>
 							</div>
 						</>

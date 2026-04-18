@@ -5,7 +5,7 @@
 }
 
 body {
-	overflow: hidden;
+	overflow-y: auto;
 }
 
 hr {
@@ -29,7 +29,7 @@ button:hover {
 
 .app-container {
 	max-width: 1280px;
-	height: 95dvh;
+	min-height: 100dvh;
 	width: 75dvw;
 	text-align: left;
 	transition: ease width 0.1s;
@@ -44,6 +44,10 @@ button:hover {
 	}
 }
 
+.prism-code-editor {
+	min-height: calc(100dvh - 50px);
+}
+
 #table-of-contents {
 	ul {
 		margin: 0px;
@@ -56,10 +60,21 @@ button:hover {
 	align-items: center;
 	gap: 4px;
 	margin-bottom: 4px;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background: #242424;
+	padding: 4px 0;
 }
 
 @media screen and (max-width: 800px) {
 	.app-container {
 		width: 95dvw;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	.title-bar {
+		background: #ffffff;
 	}
 }

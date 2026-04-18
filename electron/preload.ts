@@ -15,6 +15,12 @@ const electronAPI = {
 		ipcRenderer.invoke("create-file", dirPath, fileName),
 	deleteFile: (filePath: string): Promise<boolean> =>
 		ipcRenderer.invoke("delete-file", filePath),
+	createDirectory: (parentPath: string, folderName: string): Promise<string> =>
+		ipcRenderer.invoke("create-directory", parentPath, folderName),
+	moveFile: (sourcePath: string, targetDir: string): Promise<string> =>
+		ipcRenderer.invoke("move-file", sourcePath, targetDir),
+	copyImageToDir: (sourcePath: string, targetDir: string): Promise<string> =>
+		ipcRenderer.invoke("copy-image-to-dir", sourcePath, targetDir),
 	showMessageBox: (options: {
 		type?: string
 		buttons?: string[]

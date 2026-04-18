@@ -5,6 +5,7 @@ import Markdown, { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Editor } from "prism-react-editor"
 import { BasicSetup } from "prism-react-editor/setups"
+import { useEffect, useRef } from "react"
 
 import "prism-react-editor/prism/languages/markdown"
 
@@ -16,14 +17,86 @@ import Menu from "./components/Menu"
 import { useFileManager } from "./hooks/useFileManager"
 import { useEditorShortcuts } from "./hooks/useEditorShortcuts"
 
-function App() {
+// Text matching range for click-to-position: sample up to this many chars
+const CLICK_MATCH_MAX_LEN = 60
+const CLICK_MATCH_MIN_LEN = 8
 	const fm = useFileManager()
+
+	// Scroll position refs for maintaining position between views (stored as 0–1 fraction)
+	const editorScrollRef = useRef(0)
+	const previewScrollRef = useRef(0)
+	// Target line to jump to after switching to edit mode
+	const pendingLineRef = useRef(-1)
+
+	// Wrapper to switch views while saving/restoring scroll positions
+	const switchToEdit = (targetLine = -1) => {
+		const scrollable =
+			document.documentElement.scrollHeight -
+			document.documentElement.clientHeight
+		previewScrollRef.current =
+			scrollable > 0 ? window.scrollY / scrollable : 0
+		pendingLineRef.current = targetLine
+		fm.setIsEditing(true)
+	}
+
+	const switchToPreview = () => {
+		const editorEl = document.querySelector(".prism-code-editor")
+		if (editorEl) {
+			const scrollable = editorEl.scrollHeight - editorEl.clientHeight
+			editorScrollRef.current =
+				scrollable > 0 ? editorEl.scrollTop / scrollable : 0
+		}
+		fm.setIsEditing(false)
+	}
+
+	// Restore scroll after view switch
+	useEffect(() => {
+		if (fm.isEditing) {
+			// Switched to edit — restore editor scroll, optionally jump to line
+			requestAnimationFrame(() => {
+				const editorEl = document.querySelector(".prism-code-editor")
+				if (editorEl) {
+					const scrollable = editorEl.scrollHeight - editorEl.clientHeight
+					editorEl.scrollTop = editorScrollRef.current * scrollable
+				}
+
+				if (pendingLineRef.current >= 0) {
+					const lineNum = pendingLineRef.current
+					pendingLineRef.current = -1
+					const textarea =
+						document.querySelector<HTMLTextAreaElement>("textarea")
+					if (textarea && editorEl) {
+						const lines = fm.content.split("\n")
+						const charOffset = lines
+							.slice(0, lineNum)
+							.reduce((acc, l) => acc + l.length + 1, 0)
+						textarea.focus()
+						textarea.setSelectionRange(charOffset, charOffset)
+						const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20
+						editorEl.scrollTop = lineNum * lineHeight
+					}
+				}
+			})
+		} else {
+			// Switched to preview — restore preview scroll as percentage of new scrollable height
+			requestAnimationFrame(() => {
+				const scrollable =
+					document.documentElement.scrollHeight -
+					document.documentElement.clientHeight
+				window.scrollTo(0, previewScrollRef.current * scrollable)
+			})
+		}
+	}, [fm.isEditing])
 
 	const { handleDragOver, handleDrop } = useEditorShortcuts({
 		isEditing: fm.isEditing,
 		setIsEditing: fm.setIsEditing,
+		switchToEdit,
+		switchToPreview,
 		isDirectoryMode: fm.isDirectoryMode,
 		openedDirectory: fm.openedDirectory,
+		currentFilePath: fm.currentFilePath,
+		content: fm.content,
 		setFilePickerOpen: fm.setFilePickerOpen,
 		setContent: fm.setContent,
 		setSavedValue: fm.setSavedValue,
@@ -45,6 +118,27 @@ function App() {
 				{...props}
 			/>
 		)
+	}
+
+	// Find the source line for a clicked rendered element
+	const findLineForElement = (element: Element): number => {
+		const block = element.closest(
+			"p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, td, th"
+		)
+		if (!block) return -1
+		const text = block.textContent?.trim() ?? ""
+		for (
+			let len = Math.min(text.length, CLICK_MATCH_MAX_LEN);
+			len >= CLICK_MATCH_MIN_LEN;
+			len = Math.floor(len * 0.7)
+		) {
+			const sample = text.slice(0, len)
+			const idx = fm.content.indexOf(sample)
+			if (idx >= 0) {
+				return fm.content.slice(0, idx).split("\n").length - 1
+			}
+		}
+		return -1
 	}
 
 	return (
@@ -118,7 +212,8 @@ function App() {
 							className="rendered-markdown"
 							onClick={(e) => {
 								if (!(e.target instanceof HTMLAnchorElement)) {
-									fm.setIsEditing(true)
+									const line = findLineForElement(e.target as Element)
+									switchToEdit(line)
 								}
 							}}
 						>
@@ -143,6 +238,8 @@ function App() {
 				onSelectFile={fm.handleSelectFile}
 				onCreateFile={fm.handleCreateFile}
 				onDeleteFile={fm.handleDeleteFile}
+				onCreateDirectory={fm.handleCreateDirectory}
+				onMoveFile={fm.handleMoveFile}
 				fileTree={fm.fileTree}
 				recentDirectories={fm.recentDirectories}
 				onRemoveRecentDir={fm.handleRemoveRecentDir}
