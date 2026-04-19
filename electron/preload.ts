@@ -29,6 +29,14 @@ const electronAPI = {
 	removeRecentDirectory: (dirPath: string): Promise<string[]> =>
 		ipcRenderer.invoke("remove-recent-dir", dirPath),
 	setTitle: (title: string): void => ipcRenderer.send("set-title", title),
+	copyFile: (sourcePath: string, destPath: string): Promise<string> =>
+		ipcRenderer.invoke("copy-file", sourcePath, destPath),
+	createDirectory: (dirPath: string, dirName: string): Promise<string> =>
+		ipcRenderer.invoke("create-directory", dirPath, dirName),
+	moveFile: (sourcePath: string, targetDir: string): Promise<string> =>
+		ipcRenderer.invoke("move-file", sourcePath, targetDir),
+	readFileBase64: (filePath: string): Promise<string> =>
+		ipcRenderer.invoke("read-file-base64", filePath),
 	onMenuAction: (callback: (action: string) => void): (() => void) => {
 		const handler = (_event: Electron.IpcRendererEvent, action: string) =>
 			callback(action)

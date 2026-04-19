@@ -213,3 +213,31 @@
 .recent-dir-remove:hover {
 	opacity: 1;
 }
+
+.file-tree-drop-target {
+	background: #445;
+	border-radius: 4px;
+	outline: 1px dashed #88f;
+}
+
+.file-tree-file[draggable="true"],
+.file-tree-dir[draggable="true"] {
+	cursor: grab;
+}
+
+.file-tree-file[draggable="true"]:active,
+.file-tree-dir[draggable="true"]:active {
+	cursor: grabbing;
+}
+
+.create-mode-toggle {
+	padding: 4px 6px !important;
+	font-size: 0.85rem;
+	opacity: 0.5;
+	border-radius: 4px;
+}
+
+.create-mode-toggle.active {
+	opacity: 1;
+	background: #444;
+}

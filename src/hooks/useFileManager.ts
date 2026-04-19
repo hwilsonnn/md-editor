@@ -267,6 +267,46 @@ export function useFileManager() {
 		updateWindowTitle(false, null, null)
 	}, [checkUnsaved, updateWindowTitle])
 
+	// Create directory
+	const handleCreateDirectory = useCallback(
+		async (parentPath: string, dirName: string) => {
+			try {
+				await api.createDirectory(parentPath, dirName)
+				if (openedDirectory) await refreshFileTree(openedDirectory)
+			} catch (err) {
+				await api.showMessageBox({
+					type: "error",
+					buttons: ["OK"],
+					title: "Create Directory Error",
+					message: `Failed to create directory: ${err instanceof Error ? err.message : String(err)}`
+				})
+			}
+		},
+		[openedDirectory, refreshFileTree]
+	)
+
+	// Move file or directory
+	const handleMoveFile = useCallback(
+		async (sourcePath: string, targetDir: string) => {
+			try {
+				const newPath = await api.moveFile(sourcePath, targetDir)
+				if (openedDirectory) await refreshFileTree(openedDirectory)
+				// Update currentFilePath if the moved file is currently open
+				if (currentFilePath === sourcePath) {
+					setCurrentFilePath(newPath)
+				}
+			} catch (err) {
+				await api.showMessageBox({
+					type: "error",
+					buttons: ["OK"],
+					title: "Move Error",
+					message: `Failed to move: ${err instanceof Error ? err.message : String(err)}`
+				})
+			}
+		},
+		[openedDirectory, currentFilePath, refreshFileTree]
+	)
+
 	// Remove recent directory
 	const handleRemoveRecentDir = useCallback(async (dir: string) => {
 		if (!api) return
@@ -317,6 +357,9 @@ export function useFileManager() {
 		handleCreateFile,
 		handleDeleteFile,
 		handleCloseDirectory,
-		handleRemoveRecentDir
+		handleRemoveRecentDir,
+		handleCreateDirectory,
+		handleMoveFile,
+		refreshFileTree
 	}
 }

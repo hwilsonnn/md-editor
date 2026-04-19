@@ -1,7 +1,6 @@
 .rendered-markdown {
-	height: calc(100% - 28px);
 	width: 100%;
-	overflow-y: auto;
+	overflow-wrap: break-word;
 
 	p {
 		margin-bottom: 20px;
@@ -9,5 +8,24 @@
 		/* height: 20px; */
 		line-height: 20px;
 		font-size: 16px;
+	}
+
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+
+	a {
+		overflow-wrap: anywhere;
+	}
+
+	pre {
+		overflow-x: auto;
+		max-width: 100%;
+	}
+
+	table {
+		display: block;
+		overflow-x: auto;
 	}
 }

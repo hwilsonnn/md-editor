@@ -299,6 +299,87 @@ ipcMain.handle("get-recent-dirs", () => {
 	return store.get("recentDirectories", [])
 })
 
+// Copy file (for image drag & drop)
+ipcMain.handle(
+	"copy-file",
+	async (_event: IpcMainInvokeEvent, sourcePath: string, destPath: string) => {
+		if (currentDirectory && !isPathWithin(destPath, currentDirectory)) {
+			throw new Error(
+				"Access denied: destination is outside the opened directory"
+			)
+		}
+		// Auto-rename if destination already exists
+		let finalPath = destPath
+		const ext = path.extname(destPath)
+		const base = destPath.slice(0, -ext.length || undefined)
+		let counter = 1
+		while (true) {
+			try {
+				await fs.access(finalPath)
+				finalPath = `${base}-${counter}${ext}`
+				counter++
+			} catch {
+				break
+			}
+		}
+		await fs.copyFile(sourcePath, finalPath)
+		return finalPath
+	}
+)
+
+// Create directory
+ipcMain.handle(
+	"create-directory",
+	async (_event: IpcMainInvokeEvent, dirPath: string, dirName: string) => {
+		if (currentDirectory && !isPathWithin(dirPath, currentDirectory)) {
+			throw new Error("Access denied: path is outside the opened directory")
+		}
+		const fullPath = path.join(dirPath, dirName)
+		await fs.mkdir(fullPath, { recursive: false })
+		return fullPath
+	}
+)
+
+// Move file or directory
+ipcMain.handle(
+	"move-file",
+	async (_event: IpcMainInvokeEvent, sourcePath: string, targetDir: string) => {
+		if (currentDirectory && !isPathWithin(sourcePath, currentDirectory)) {
+			throw new Error("Access denied: source is outside the opened directory")
+		}
+		if (currentDirectory && !isPathWithin(targetDir, currentDirectory)) {
+			throw new Error("Access denied: target is outside the opened directory")
+		}
+		const fileName = path.basename(sourcePath)
+		const destPath = path.join(targetDir, fileName)
+		if (sourcePath === destPath) return destPath
+		// Check if destination already exists
+		try {
+			await fs.access(destPath)
+			throw new Error(`"${fileName}" already exists in the target directory`)
+		} catch (err: unknown) {
+			if (
+				err instanceof Error &&
+				"code" in err &&
+				(err as NodeJS.ErrnoException).code === "ENOENT"
+			) {
+				await fs.rename(sourcePath, destPath)
+				return destPath
+			}
+			throw err
+		}
+	}
+)
+
+// Read file as base64 (for image fallback)
+ipcMain.handle(
+	"read-file-base64",
+	async (_event: IpcMainInvokeEvent, filePath: string) => {
+		const buffer = await fs.readFile(filePath)
+		return buffer.toString("base64")
+	}
+)
+
 ipcMain.handle(
 	"add-recent-dir",
 	(_event: IpcMainInvokeEvent, dirPath: string) => {

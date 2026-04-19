@@ -24,6 +24,10 @@ export interface ElectronAPI {
 	addRecentDirectory: (dirPath: string) => Promise<string[]>
 	removeRecentDirectory: (dirPath: string) => Promise<string[]>
 	setTitle: (title: string) => void
+	copyFile: (sourcePath: string, destPath: string) => Promise<string>
+	createDirectory: (dirPath: string, dirName: string) => Promise<string>
+	moveFile: (sourcePath: string, targetDir: string) => Promise<string>
+	readFileBase64: (filePath: string) => Promise<string>
 	onMenuAction: (callback: (action: string) => void) => () => void
 }
 

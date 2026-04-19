@@ -12,6 +12,8 @@ interface FilePickerProps {
 	onSelectFile: (filePath: string) => void
 	onCreateFile: (dirPath: string, fileName: string) => void
 	onDeleteFile: (filePath: string) => void
+	onCreateDirectory: (parentPath: string, dirName: string) => void
+	onMoveFile: (sourcePath: string, targetDir: string) => void
 	fileTree: FileTreeNode[]
 	recentDirectories: string[]
 	onRemoveRecentDir: (dir: string) => void
@@ -27,6 +29,8 @@ const FilePicker = ({
 	onSelectFile,
 	onCreateFile,
 	onDeleteFile,
+	onCreateDirectory,
+	onMoveFile,
 	fileTree,
 	recentDirectories,
 	onRemoveRecentDir,
@@ -34,16 +38,21 @@ const FilePicker = ({
 }: FilePickerProps) => {
 	const [newFileName, setNewFileName] = useState("")
 	const [isCreating, setIsCreating] = useState(false)
+	const [createMode, setCreateMode] = useState<"file" | "folder">("file")
 
 	if (!isOpen) return null
 
 	const handleCreateFile = () => {
 		if (!newFileName.trim() || !openedDirectory) return
 		let name = newFileName.trim()
-		if (!name.match(/\.(md|txt|markdown)$/i)) {
+		if (createMode === "file" && !name.match(/\.(md|txt|markdown)$/i)) {
 			name += ".md"
 		}
-		onCreateFile(openedDirectory, name)
+		if (createMode === "file") {
+			onCreateFile(openedDirectory, name)
+		} else {
+			onCreateDirectory(openedDirectory, name)
+		}
 		setNewFileName("")
 		setIsCreating(false)
 	}
@@ -75,6 +84,20 @@ const FilePicker = ({
 							<div className="file-picker-actions">
 								{isCreating ? (
 									<div className="new-file-input-row">
+										<button
+											className={`create-mode-toggle ${createMode === "file" ? "active" : ""}`}
+											onClick={() => setCreateMode("file")}
+											title="Create file"
+										>
+											📄
+										</button>
+										<button
+											className={`create-mode-toggle ${createMode === "folder" ? "active" : ""}`}
+											onClick={() => setCreateMode("folder")}
+											title="Create folder"
+										>
+											📁
+										</button>
 										<input
 											className="new-file-input"
 											value={newFileName}
@@ -83,16 +106,16 @@ const FilePicker = ({
 												if (e.key === "Enter") handleCreateFile()
 												if (e.key === "Escape") setIsCreating(false)
 											}}
-											placeholder="filename.md"
+											placeholder={
+												createMode === "file" ? "filename.md" : "folder name"
+											}
 											autoFocus
 										/>
 										<button onClick={handleCreateFile}>✓</button>
 										<button onClick={() => setIsCreating(false)}>✕</button>
 									</div>
 								) : (
-									<button onClick={() => setIsCreating(true)}>
-										+ New File
-									</button>
+									<button onClick={() => setIsCreating(true)}>+ New</button>
 								)}
 							</div>
 
@@ -105,6 +128,7 @@ const FilePicker = ({
 										onClose()
 									}}
 									onDeleteFile={onDeleteFile}
+									onMoveFile={onMoveFile}
 								/>
 							</div>
 						</>
